@@ -98,6 +98,16 @@ public class SDOImport {
         f.delete();
     }
 
+    public static void deleteBuildMProperties(String uri, String predicate, String sda_config) {
+        Map<String, String> sda_config_properties = FileUtils.readIntoStringMap(sda_config, "\t", false);
+        String query = " WITH <" + sda_config_properties.get("working_graph") + "> " +
+                " DELETE {" + uri + " " + predicate + "?value} " +
+                " WHERE { " + uri + " " + predicate + "?value}";
+        UpdateRequest queryObj = UpdateFactory.create(query);
+        UpdateProcessor qexec = UpdateExecutionFactory.createRemoteForm(queryObj, sda_config_properties.get("endpoint"));
+        qexec.execute();
+    }
+
     /**
      * Interlinks a given buildM instance with existing crawls. In case the resource is empty, first it fetches
      * all buildM instances and matches them with a given crawl.
